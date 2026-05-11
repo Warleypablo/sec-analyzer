@@ -16,7 +16,10 @@ const SENSITIVE_TERMS = [
 function detectSensitiveFields(rows) {
   if (!rows || rows.length === 0) return []
   const allKeys = rows.flatMap(r => Object.keys(r)).map(k => k.toLowerCase())
-  return [...new Set(allKeys.filter(k => SENSITIVE_TERMS.some(t => k.includes(t))))]
+  return [...new Set(allKeys.filter(k => {
+    const parts = k.split('_')
+    return parts.some(part => SENSITIVE_TERMS.includes(part))
+  }))]
 }
 
 async function getTableList(supabaseUrl, anonKey) {
@@ -30,7 +33,7 @@ async function getTableList(supabaseUrl, anonKey) {
     const paths = Object.keys(spec.paths || {})
       .map(p => p.replace(/^\//, ''))
       .filter(p => p && !p.includes('{') && !p.includes('/'))
-    return paths.length > 0 ? [...new Set([...paths, ...COMMON_TABLES])] : COMMON_TABLES
+    return paths.length > 0 ? paths : COMMON_TABLES
   } catch {
     return COMMON_TABLES
   }
@@ -69,7 +72,7 @@ async function checkSupabase(supabaseUrl, anonKey) {
       category: 'rls',
       title: `Tabela \`${table}\` acessível sem autenticação`,
       severity,
-      evidence: `curl -s -H "apikey: ${anonKey.substring(0, 30)}..." "${supabaseUrl}/rest/v1/${table}?select=*&limit=5"  →  ${data.length} registro(s)`,
+      evidence: `curl -s -H "apikey: <anon-key>" "${supabaseUrl}/rest/v1/${table}?select=*&limit=5"  →  ${data.length} registro(s)`,
       impact: sensitiveFields.length > 0
         ? `Dados sensíveis expostos: ${sensitiveFields.join(', ')}.`
         : `Tabela ${table} legível sem login. RLS desabilitada ou com USING(true).`,
