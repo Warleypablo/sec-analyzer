@@ -49,6 +49,24 @@ describe('checkHeaders', () => {
     expect(f.severity).toBe('low')
   })
 
+  it('não retorna cors-wildcard quando CORS tem valor específico (não *)', async () => {
+    mockFetch({ 'access-control-allow-origin': 'https://trusted.com' })
+    const findings = await checkHeaders('https://example.com')
+    expect(findings.some(x => x.id === 'CAT1-cors-wildcard')).toBe(false)
+  })
+
+  it('retorna apenas findings para headers ausentes quando alguns estão presentes', async () => {
+    mockFetch({
+      'content-security-policy': "default-src 'self'",
+      'x-frame-options': 'SAMEORIGIN'
+    })
+    const findings = await checkHeaders('https://example.com')
+    expect(findings.some(x => x.id === 'CAT1-missing-content-security-policy')).toBe(false)
+    expect(findings.some(x => x.id === 'CAT1-missing-x-frame-options')).toBe(false)
+    expect(findings.some(x => x.id === 'CAT1-missing-strict-transport-security')).toBe(true)
+    expect(findings.some(x => x.id === 'CAT1-missing-x-content-type-options')).toBe(true)
+  })
+
   it('todos os findings têm campos obrigatórios', async () => {
     mockFetch({})
     const findings = await checkHeaders('https://example.com')
