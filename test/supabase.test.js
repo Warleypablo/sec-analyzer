@@ -64,7 +64,7 @@ describe('checkSupabase', () => {
     expect(f.details.sensitiveFields).toContain('email')
   })
 
-  it('retorna finding high quando tabela exposta sem campos sensíveis', async () => {
+  it('retorna finding critical quando tabela exposta sem campos sensíveis', async () => {
     global.fetch.mockImplementation((url) => {
       if (url.endsWith('/rest/v1/')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ paths: { '/products': {} } }) })
@@ -78,7 +78,8 @@ describe('checkSupabase', () => {
     const findings = await checkSupabase(SUPA_URL, ANON_KEY)
     const f = findings.find(x => x.id === 'CAT3-rls-products')
     expect(f).toBeDefined()
-    expect(f.severity).toBe('high')
+    expect(f.severity).toBe('critical')
+    expect(f.impact).toMatch(/RLS ausente/)
   })
 
   it('não retorna finding quando tabela retorna array vazio', async () => {

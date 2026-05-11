@@ -65,17 +65,16 @@ async function checkSupabase(supabaseUrl, anonKey) {
     const data = r.value
     const table = tables[i]
     const sensitiveFields = detectSensitiveFields(data)
-    const severity = sensitiveFields.length > 0 ? 'critical' : 'high'
 
     findings.push({
       id: `CAT3-rls-${table}`,
       category: 'rls',
       title: `Tabela \`${table}\` acessível sem autenticação`,
-      severity,
+      severity: 'critical',
       evidence: `curl -s -H "apikey: <anon-key>" "${supabaseUrl}/rest/v1/${table}?select=*&limit=5"  →  ${data.length} registro(s)`,
       impact: sensitiveFields.length > 0
-        ? `Dados sensíveis expostos: ${sensitiveFields.join(', ')}.`
-        : `Tabela ${table} legível sem login. RLS desabilitada ou com USING(true).`,
+        ? `RLS ausente — dados sensíveis expostos publicamente: ${sensitiveFields.join(', ')}.`
+        : `RLS ausente — tabela ${table} legível por qualquer pessoa com a anon key.`,
       details: { table, rowCount: data.length, sensitiveFields, columns: data[0] ? Object.keys(data[0]) : [] }
     })
   }
