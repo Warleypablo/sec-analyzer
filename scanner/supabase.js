@@ -79,6 +79,19 @@ async function checkSupabase(supabaseUrl, anonKey) {
     })
   }
 
+  const exposedCount = findings.length
+  if (exposedCount === 0) {
+    findings.push({
+      id: 'CAT3-rls-ok',
+      category: 'rls',
+      title: 'RLS verificada — nenhum dado exposto anonimamente',
+      severity: 'info',
+      evidence: `Testadas ${tables.length} tabela(s) com a anon key — todas retornaram 0 registros ou 401.`,
+      impact: 'Políticas de RLS estão bloqueando acesso anônimo corretamente.',
+      details: { tablesChecked: tables.length, tables }
+    })
+  }
+
   return findings
 }
 

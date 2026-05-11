@@ -82,13 +82,17 @@ describe('checkSupabase', () => {
     expect(f.impact).toMatch(/RLS ausente/)
   })
 
-  it('não retorna finding quando tabela retorna array vazio', async () => {
+  it('retorna finding info rls-ok quando todas as tabelas estão protegidas', async () => {
     global.fetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve([])
     })
 
     const findings = await checkSupabase(SUPA_URL, ANON_KEY)
-    expect(findings).toEqual([])
+    expect(findings).toHaveLength(1)
+    const f = findings[0]
+    expect(f.id).toBe('CAT3-rls-ok')
+    expect(f.severity).toBe('info')
+    expect(f.impact).toMatch(/RLS/)
   })
 })
