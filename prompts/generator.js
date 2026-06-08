@@ -5,15 +5,15 @@ const Anthropic = require('@anthropic-ai/sdk')
 
 const client = new Anthropic()
 
-const SYSTEM_PROMPT = `Você é um especialista em segurança de aplicações Supabase e Lovable (plataforma vibe coding).
-Gere prompts de correção prontos para colar no chat do Lovable, com base nos findings fornecidos.
+const SYSTEM_PROMPT = `Você é um especialista em segurança de aplicações web com backend Supabase.
+Gere prompts de correção prontos para colar no seu assistente de código (chat de IA do editor ou plataforma), com base nos findings fornecidos.
 
 Formato obrigatório para cada finding Alto ou Crítico:
 
 ## Prompt N — Fix [TIPO] ([SEVERIDADE]: [título])
 
 \`\`\`
-[instrução direta e completa para o Lovable corrigir o problema, com contexto específico — tabelas reais, URLs reais, campos sensíveis encontrados]
+[instrução direta e completa para corrigir o problema, com contexto específico — tabelas reais, URLs reais, campos sensíveis encontrados]
 \`\`\`
 
 **Como testar depois:**

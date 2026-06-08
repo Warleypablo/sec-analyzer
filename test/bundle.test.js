@@ -33,8 +33,8 @@ describe('extractScriptUrls', () => {
 
   it('converte paths relativos para URL absoluta', () => {
     const html = '<html><script src="/assets/index-abc.js"></script></html>'
-    const urls = extractScriptUrls(html, 'https://myapp.lovable.app')
-    expect(urls).toContain('https://myapp.lovable.app/assets/index-abc.js')
+    const urls = extractScriptUrls(html, 'https://myapp.example.com')
+    expect(urls).toContain('https://myapp.example.com/assets/index-abc.js')
   })
 })
 
@@ -47,7 +47,7 @@ describe('checkBundle', () => {
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`<html><script src="/bundle.js"></script></html>`) })
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`const k="${SERVICE_KEY}";const url="${SUPABASE_URL}"`) })
 
-    const result = await checkBundle('https://myapp.lovable.app')
+    const result = await checkBundle('https://myapp.example.com')
     expect(result.findings.some(f => f.id === 'CAT2-service-role-key')).toBe(true)
     expect(result.findings.find(f => f.id === 'CAT2-service-role-key').severity).toBe('critical')
   })
@@ -57,7 +57,7 @@ describe('checkBundle', () => {
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`<html><script src="/bundle.js"></script></html>`) })
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`const k="${ANON_KEY}";const url="${SUPABASE_URL}"`) })
 
-    const result = await checkBundle('https://myapp.lovable.app')
+    const result = await checkBundle('https://myapp.example.com')
     expect(result.supabaseAnonKey).toBe(ANON_KEY)
     expect(result.supabaseUrl).toBe(SUPABASE_URL)
     expect(result.findings.some(f => f.id === 'CAT2-anon-key')).toBe(true)
@@ -70,7 +70,7 @@ describe('checkBundle', () => {
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`<html><script src="/bundle.js"></script></html>`) })
       .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(`const openai="${openaiKey}"`) })
 
-    const result = await checkBundle('https://myapp.lovable.app')
+    const result = await checkBundle('https://myapp.example.com')
     expect(result.findings.some(f => f.id === 'CAT2-openai-key')).toBe(true)
   })
 

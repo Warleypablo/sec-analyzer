@@ -11,7 +11,7 @@ const SAMPLE_FINDINGS = [
   { id: 'CAT2-anon-key', category: 'bundle', title: 'Anon key detectada', severity: 'info', evidence: '...', impact: '...', details: {} }
 ]
 
-const META = { appUrl: 'https://myapp.lovable.app', supabaseUrl: 'https://abc.supabase.co', supabaseAnonKey: 'eyJ...' }
+const META = { appUrl: 'https://myapp.example.com', supabaseUrl: 'https://abc.supabase.co', supabaseAnonKey: 'eyJ...' }
 
 describe('calculateScore', () => {
   it('retorna 0 para findings vazios', () => {

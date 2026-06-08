@@ -1,7 +1,7 @@
 {
   "name": "security-analyzer",
   "version": "1.0.0",
-  "description": "Analisador de segurança para apps Lovable/Supabase",
+  "description": "Analisador de segurança para aplicações web com backend Supabase",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

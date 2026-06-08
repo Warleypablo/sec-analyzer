@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Analyzer — Lovable/Supabase</title>
+<title>Security Analyzer — Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -95,12 +95,12 @@
 <div class="container">
   <header>
     <h1>security <span>analyzer</span></h1>
-    <p class="subtitle">lovable · supabase · análise pública anônima</p>
+    <p class="subtitle">supabase · análise pública anônima</p>
   </header>
 
   <div class="form-box">
     <div class="input-row">
-      <input type="url" id="url-input" placeholder="https://meuapp.lovable.app" autocomplete="off">
+      <input type="url" id="url-input" placeholder="Cole a URL do seu site aqui" autocomplete="off">
       <button class="primary" id="analyze-btn" onclick="startAnalysis()">Analisar</button>
     </div>
     <p class="error-msg hidden" id="form-error"></p>
@@ -128,7 +128,7 @@
     <div class="findings" id="findings-list"></div>
 
     <div class="prompts-section">
-      <p class="section-title">Prompts para o Lovable</p>
+      <p class="section-title">Prompts de correção</p>
       <div class="prompts-actions">
         <button class="secondary" onclick="copyPrompts()">Copiar todos</button>
         <button class="secondary" onclick="downloadReport()">Baixar .md</button>
@@ -294,7 +294,7 @@ function downloadReport() {
       `### [${f.severity.toUpperCase()}] ${f.title}\n**Evidência:** \`${f.evidence}\`\n**Impacto:** ${f.impact}`
     ),
     '',
-    '## Prompts para o Lovable',
+    '## Prompts de correção',
     currentReport.prompts
   ].join('\n\n')
   const blob = new Blob([content], { type: 'text/markdown' })
