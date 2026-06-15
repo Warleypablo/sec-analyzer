@@ -36,6 +36,20 @@ describe('extractScriptUrls', () => {
     const urls = extractScriptUrls(html, 'https://myapp.example.com')
     expect(urls).toContain('https://myapp.example.com/assets/index-abc.js')
   })
+
+  // Regressão: apps Lovable atuais carregam o bundle como ES module, sem <script src>.
+  // O bundle entra por <link rel="modulepreload"> e por import() dinâmico em <script type="module">.
+  it('extrai bundles de <link rel="modulepreload">', () => {
+    const html = '<html><head><link rel="modulepreload" href="/assets/index--4zzMzlr.js"/></head></html>'
+    const urls = extractScriptUrls(html, 'https://myapp.example.com')
+    expect(urls).toContain('https://myapp.example.com/assets/index--4zzMzlr.js')
+  })
+
+  it('extrai bundles de import() dinâmico em <script type="module">', () => {
+    const html = '<html><body><script type="module" async="">import("/assets/index-VIfClXnl.js")</script></body></html>'
+    const urls = extractScriptUrls(html, 'https://myapp.example.com')
+    expect(urls).toContain('https://myapp.example.com/assets/index-VIfClXnl.js')
+  })
 })
 
 describe('checkBundle', () => {

@@ -11,18 +11,42 @@ function decodeJwtPayload(jwt) {
   }
 }
 
+function resolveUrl(src, baseUrl) {
+  try {
+    if (src.startsWith('http')) return src
+    if (src.startsWith('//')) return `https:${src}`
+    return new URL(src, baseUrl).href
+  } catch { return null }
+}
+
 function extractScriptUrls(html, baseUrl) {
-  const matches = [...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)]
-  return matches
-    .map(m => {
-      const src = m[1]
-      try {
-        if (src.startsWith('http')) return src
-        if (src.startsWith('//')) return `https:${src}`
-        return new URL(src, baseUrl).href
-      } catch { return null }
-    })
-    .filter(Boolean)
+  const candidates = []
+
+  // Padrão clássico: <script src="...">
+  for (const m of html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)) {
+    candidates.push(m[1])
+  }
+
+  // ES modules (Lovable atual): bundle entra por <link rel="modulepreload" href="...">
+  // ou <link rel="preload" as="script" href="..."> — sem atributo src.
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+    const tag = m[0]
+    const rel = (tag.match(/\brel=["']([^"']+)["']/i) || [])[1] || ''
+    const as = (tag.match(/\bas=["']([^"']+)["']/i) || [])[1] || ''
+    const href = (tag.match(/\bhref=["']([^"']+)["']/i) || [])[1]
+    if (!href) continue
+    if (/modulepreload/i.test(rel) || (/preload/i.test(rel) && /script/i.test(as))) {
+      candidates.push(href)
+    }
+  }
+
+  // import() dinâmico em <script type="module">import("/assets/...")</script>
+  for (const m of html.matchAll(/import\(\s*["']([^"']+)["']\s*\)/gi)) {
+    candidates.push(m[1])
+  }
+
+  const resolved = candidates.map(src => resolveUrl(src, baseUrl)).filter(Boolean)
+  return [...new Set(resolved)]
 }
 
 const OTHER_PATTERNS = [
